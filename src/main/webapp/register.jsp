@@ -24,6 +24,12 @@
             <input required type="password" class="form-control" id="password" name="password"
                    placeholder="Mật khẩu (ít nhất 6 ký tự)" pattern=".{6,}">
         </div>
+        
+        <div class="mb-3">
+            <label for="confirm_password" class="form-label">Mật khẩu</label>
+            <input required type="password" class="form-control" id="confirm_password" name="confirm_password"
+                   placeholder="Mật khẩu (ít nhất 6 ký tự)" pattern=".{6,}">
+        </div>
 
         <div class="mb-3">
             <label for="name" class="form-label">Họ và tên</label>

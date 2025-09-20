@@ -33,8 +33,13 @@ public class Register extends HttpServlet {
 		String url = "/register.jsp";
 		// load Addresses Data
 		ArrayList<Address> arrAddress = AddressDAO.selectAll();
+		for(Address address: arrAddress) {
+			System.out.println(address);
+		}
 		request.setAttribute("arrAddress", arrAddress);
 		
+		
+	    // Forward
 		RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
 		rd.forward(request, response);
 	}
@@ -43,8 +48,41 @@ public class Register extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		String errorMessage = "";
+		// Form Register handling
+	    String userName = request.getParameter("username");
+	    String password = request.getParameter("password");
+	    String confirmPassword = request.getParameter("confirm_password");
+	    String name = request.getParameter("name");
+	    String addressIdStr = request.getParameter("address_id");
+	    String addressNumber = request.getParameter("addressNumber");
+	    String phone = request.getParameter("phone");
+	    Address address = null;
+	    // Parsing error
+	    try {
+	    	Long addressId = Long.parseLong(addressIdStr);
+	    	address = AddressDAO.selectById(addressId);
+	    } catch (Exception e) {
+	    	errorMessage = "Invalid input";
+	    	e.printStackTrace();
+	    }
+	    // userName exist in DB
+	    if (UserDAO.isExistInDB(userName)==1) {
+	    	errorMessage = "username exist in DB";
+	    }
+	    // password doesn't match
+	    if (!password.equals(confirmPassword)) {
+	    	errorMessage = "password doesn't match";
+	    }
+	    // create new User
+	    if(errorMessage.length()==0) {
+	    	UserDAO.insert(userName, password, name, address, addressNumber, phone);
+	    	response.sendRedirect(request.getContextPath()+"/login");
+	    	return;
+	    }
+	    request.setAttribute("errorMessage", errorMessage);
+	    RequestDispatcher rd = getServletContext().getRequestDispatcher("/register.jsp");
+	    rd.forward(request, response);
 	}
 
 }

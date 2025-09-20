@@ -121,6 +121,27 @@ public class UserDAO {
         }
         return exists;
     }
+    public static int isExistInDB(String userName) {
+        int exists = 0;
+        try {
+            Connection connection = JDBCUtil.getConnection();
+            String sql = "SELECT COUNT(1) AS cnt FROM USERS WHERE username = ?";
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, userName);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                long cnt = rs.getLong("cnt");
+                if (cnt > 0) exists = 1;
+            }
+            // đóng tài nguyên
+            rs.close();
+            st.close();
+            JDBCUtil.closeConnection(connection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exists;
+    }
 
     public static int insert(User user) {
         int res = 0;
@@ -156,6 +177,27 @@ public class UserDAO {
             e.printStackTrace();
         }
         return res;
+    }
+    public static int insert(String userName, String password, String name, Address address, String addressNumber, String phone) {
+    	int res = 0;
+    	try {
+    		Connection connection = JDBCUtil.getConnection();
+    		String sql = "INSERT INTO USERS(USERNAME, PASSWORD, NAME, ADDRESS_ID, ADDRESSNUMBER, PHONE)"
+    				+ " VALUES(?,?,?,?,?,?)";
+    		PreparedStatement st = connection.prepareStatement(sql);
+    		st.setString(1, userName);
+    		st.setString(2, password);
+    		st.setString(3, name);
+    		st.setLong(4, (address!=null)?address.getId():java.sql.Types.BIGINT);
+    		st.setString(5, addressNumber);
+    		st.setString(6, phone);
+    		res = st.executeUpdate();
+            st.close();
+            JDBCUtil.closeConnection(connection);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	return res;
     }
 
     public static int insert(ArrayList<User> arrUser) {
